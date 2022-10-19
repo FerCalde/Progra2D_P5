@@ -81,10 +81,11 @@ public:
 	void SetPivot(const MyVec2D& _pivot);
 	void SetPivot(float _fPivotX, float _fPivotY);
 
-	const float m_fSpeedMovement = 128.f;
+	const float m_fSpeedMovement = 900.f;
 	const float GetSpeedMovement() const;
-	const float m_fSpeedRotation = 15.f;
+	float m_fSpeedRotation = 15.f;
 	const float GetSpeedRotation() const;
+	const void SetSpeedRotation(const float _fSpeedRot);
 	const float m_fAngleRotationMax = 15.f;
 	const float GetAngleRotationMax() const;
 
@@ -109,6 +110,9 @@ public:
 	float GetCurrentFrame() const;
 	void SetCurrentFrame(int _iFrame);
 
+	bool m_bIsMoving = false;
+
+	
 
 };
 

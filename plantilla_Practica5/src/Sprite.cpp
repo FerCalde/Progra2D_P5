@@ -198,6 +198,11 @@ const float Sprite::GetSpeedRotation() const
 	return m_fSpeedRotation;
 }
 
+const void Sprite::SetSpeedRotation(float _fSpeedRot) 
+{
+	m_fSpeedRotation = _fSpeedRot;
+}
+
 const float Sprite::GetAngleRotationMax() const
 {
 	return m_fAngleRotationMax;
