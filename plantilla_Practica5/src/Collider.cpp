@@ -9,7 +9,11 @@ Collider::Collider(const MyVec2D& _posCollider)
 
 bool Collider::CheckCircleCircle(const MyVec2D& _pos1, float _fRadius1, const MyVec2D& _pos2, float _fRadius2) const
 {
-    return false;
+	//Distance Centers < Sum Radius
+    float distCenters = _pos1.Distance(_pos2);
+    float sumRadius = _fRadius1 + _fRadius2;
+    //bool bCollisionDetected = distCenters < sumRadius ? true : false;
+    return distCenters < sumRadius;
 }
 
 bool Collider::CheckCircleRect(const MyVec2D& _circlePos, float _fCircleRadius, const MyVec2D& _rectPos, const MyVec2D& _rectSize) const
@@ -24,6 +28,12 @@ bool Collider::CheckCirclePixels(const MyVec2D& _circlePos, float _fCircleRadius
 
 bool Collider::CheckRectRect(const MyVec2D& _rectPos1, const MyVec2D& _rectSize1, const MyVec2D& _rectPos2, const MyVec2D& _rectSize2) const
 {
+
+
+
+	
+	
+
     return false;
 }
 
