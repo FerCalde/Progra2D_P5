@@ -249,11 +249,15 @@ void Sprite::SetCollisionType(CollisionType _type)
 	{
 	case COLLISION_CIRCLE:
 	{
-		//m_Collider = new CircleCollider();
+
+		float auxRadius = (m_Size.x*0.5f) >= (m_Size.y*0.5f) ? (m_Size.x*0.5f) : (m_Size.y*0.5f);
+
+		m_Collider = new CircleCollider(m_Position, auxRadius); //@TEST -> Position is in middle Sprite
 	} break;
 
 	case COLLISION_RECT:
 	{
+		
 		//m_Collider = new RectCollider();
 	} break;
 
