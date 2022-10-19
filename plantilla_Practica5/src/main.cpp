@@ -64,7 +64,7 @@ MyVec2D middleScreen(weightWindowScreen * 0.5f, heightWindowScreen * 0.5f); //St
 
 //Rotacion CircleSource
 float rotationCurrentFrame = 0.f;
-float sourceSpeed = 75.f;
+float sourceSpeed = 55.f;
 float fDopplerFactor =1.f;
 float fGain = 325.f;
 

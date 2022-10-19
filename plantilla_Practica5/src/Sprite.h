@@ -81,7 +81,7 @@ public:
 	void SetPivot(const MyVec2D& _pivot);
 	void SetPivot(float _fPivotX, float _fPivotY);
 
-	const float m_fSpeedMovement = 900.f;
+	const float m_fSpeedMovement = 750.f;
 	const float GetSpeedMovement() const;
 	float m_fSpeedRotation = 15.f;
 	const float GetSpeedRotation() const;
