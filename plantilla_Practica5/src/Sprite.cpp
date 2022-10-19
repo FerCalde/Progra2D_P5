@@ -1,8 +1,9 @@
 #define STB_IMAGE_IMPLEMENTATION
 
 #include "Sprite.h"
-#include "stb_image.h"
 
+#include "Collider.h"
+#include "stb_image.h"
 
 Sprite::Sprite(const ltex_t* _tex, int _iHframes, int _iVframes)
 	: m_texture(_tex),
@@ -21,27 +22,27 @@ void Sprite::Update(float _fDeltaTime)
 	{
 		(*m_CallbackFunc)(*this, _fDeltaTime);
 	}
-	
+
 	elapsedTickFPS += _fDeltaTime;
 	if (elapsedTickFPS >= m_tickPerFPS)
 	{
 		(GetCurrentFrame() < GetFPS()) ? SetCurrentFrame(GetCurrentFrame() + 1) : SetCurrentFrame(0);
-		
+
 		elapsedTickFPS -= m_tickPerFPS;
-	}	
+	}
 }
 
 void Sprite::Draw() const
 {
 	//Find UVs
-	float u0 = (m_fCurrentFrame * m_SizeUVAnimFrame.x)/GetTexture()->width;
+	float u0 = (m_fCurrentFrame * m_SizeUVAnimFrame.x) / GetTexture()->width;
 	//float u1 = u0 + m_SizeUVAnimFrame.x;
-	float u1 = ((m_fCurrentFrame+1)* m_SizeUVAnimFrame.x)/GetTexture()->width;
-	
+	float u1 = ((m_fCurrentFrame + 1) * m_SizeUVAnimFrame.x) / GetTexture()->width;
+
 	float v0 = 0;
 	float v1 = 1;
 	//float v1 = m_SizeUVAnimFrame.y;
-	
+
 	lgfx_setblend(GetBlend());
 	//ltex_draw(GetTexture(), GetPosition().x, GetPosition().y);
 	ltex_drawrotsized(GetTexture(), GetPosition().x, GetPosition().y, GetRotation(), GetPivot().x, GetPivot().y, GetSize().x, GetSize().y, u0, v0, u1, v1);
@@ -62,7 +63,7 @@ void Sprite::SetTexture(const ltex_t* _tex, int _iHframes, int _iVframes)
 	m_texture = _tex;
 	m_iHframes = _iHframes;
 	m_iVframes = _iVframes;
-	
+
 	SetSizeUVAnimFrame();
 }
 
@@ -198,7 +199,7 @@ const float Sprite::GetSpeedRotation() const
 	return m_fSpeedRotation;
 }
 
-const void Sprite::SetSpeedRotation(float _fSpeedRot) 
+const void Sprite::SetSpeedRotation(float _fSpeedRot)
 {
 	m_fSpeedRotation = _fSpeedRot;
 }
@@ -239,6 +240,48 @@ void Sprite::SetCurrentFrame(int _iFrame)
 	m_fCurrentFrame = _iFrame;
 }
 
+void Sprite::SetCollisionType(CollisionType _type)
+{
+	delete m_Collider;
+	m_Collider = nullptr;
+	m_CollisionType = _type;
+	switch (m_CollisionType)
+	{
+	case COLLISION_CIRCLE:
+	{
+		//m_Collider = new CircleCollider();
+	} break;
+
+	case COLLISION_RECT:
+	{
+		//m_Collider = new RectCollider();
+	} break;
+
+	case COLLISION_PIXELS:
+	{
+		//m_Collider = new PixelsCollider();
+	} break;
+
+	default:
+		break;
+	}
+}
+
+CollisionType Sprite::GetCollisionType() const
+{
+	return m_CollisionType;
+}
+
+const Collider* Sprite::GetCollider() const
+{
+	return m_Collider;
+}
+
+bool Sprite::Collides(const Sprite& _other) const
+{
+	return m_Collider->Collides(*(_other.GetCollider()));
+}
+
 
 
 
@@ -261,7 +304,7 @@ ltex_t* SpriteManager::GenerateTexture(const char* _fileName)
 
 	stbi_image_free(bufferImg); //Eliminar el buffer creado anteriormente, ya he pasado los datos a la imagen que quiero crear (Creada la textura)
 	m_vTextureArray.push_back(textureCreated);
-	
+
 	return  textureCreated;
 }
 
@@ -271,7 +314,7 @@ void SpriteManager::LoadTexture(const char* _fileName)
 	int* heightImgSize = new int;
 	//Carga de ficheros de imagen
 	unsigned char* bufferImg = stbi_load(_fileName, widthImgSize, heightImgSize, nullptr, 4); //Datos de la imagen
-	
+
 	if (bufferImg)
 	{
 		ltex_t* textureCreated = ltex_alloc(*widthImgSize, *heightImgSize, 1); //Generacion de la textura

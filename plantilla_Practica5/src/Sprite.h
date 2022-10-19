@@ -7,6 +7,16 @@
 
 //class ltext_t;
 
+enum CollisionType
+{
+	COLLISION_NONE,
+	COLLISION_CIRCLE,
+	COLLISION_RECT,
+	COLLISION_PIXELS
+};
+
+class Collider;
+
 class Sprite
 {
 public:
@@ -112,8 +122,16 @@ public:
 
 	bool m_bIsMoving = false;
 
+	//COLLIDER STUFF
+private:
+	CollisionType m_CollisionType = COLLISION_NONE;
+	Collider* m_Collider = nullptr;
 	
-
+public:
+	void SetCollisionType(CollisionType _type);
+	CollisionType GetCollisionType() const;
+	const Collider* GetCollider() const;
+	bool Collides(const Sprite& _other) const;
 };
 
 
