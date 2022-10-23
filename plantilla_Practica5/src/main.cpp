@@ -59,6 +59,8 @@ const char* circle_fileName = "data/circle.png";
 const char* rect_fileName = "data/rect.png";
 
 void CallbackUpdateSprite(Sprite& _sprite, float _fDeltaTime);
+void CallbackUpdateSpriteMouse(Sprite& _sprite, float _fDeltaTime);
+
 
 /* -----VARS P2 AUDIO----- */
 const char* audio_fileName = "data/CantinaBand60.wav";
@@ -152,16 +154,19 @@ int main()
 		ptrSpriteManager->LoadTexture(bee_fileName);
 		ptrSpriteManager->LoadTexture(ball_fileName);
 		ptrSpriteManager->LoadTexture(box_fileName);
+		ptrSpriteManager->LoadTexture(circle_fileName);
+		ptrSpriteManager->LoadTexture(rect_fileName);
+
 		std::cout << "Creacion ptrSpriteManager\n";
 
 		//Sprite Bee created
-		Sprite* ptrBee = new Sprite(ptrSpriteManager->m_vTextureArray[0], 8, 1);
-		ptrBee->SetFPS(8);
-		ptrBee->SetBlend(BLEND_ALPHA);
+		Sprite* ptrBeePlayer = new Sprite(ptrSpriteManager->m_vTextureArray[3], 1, 1);
+		ptrBeePlayer->SetFPS(1);
+		ptrBeePlayer->SetBlend(BLEND_ALPHA);
 		MyVec2D initialPosMiddleScreen(weightWindowScreen * 0.5f, heightWindowScreen * 0.5f);
-		ptrBee->SetPosition(initialPosMiddleScreen);
-		ptrBee->SetCallback(&CallbackUpdateSprite);
-		ptrBee->SetCollisionType(COLLISION_CIRCLE);
+		ptrBeePlayer->SetPosition(initialPosMiddleScreen);
+		ptrBeePlayer->SetCallback(&CallbackUpdateSpriteMouse);
+		ptrBeePlayer->SetCollisionType(COLLISION_CIRCLE);
 		std::cout << "Creacion ptrBee\n";
 
 
@@ -267,6 +272,26 @@ int main()
 					myAudioSource->SetPosition(auxPos);
 				}
 
+				//Change Sprites 
+				if (glfwGetKey(myWindow, GLFW_MOUSE_BUTTON_LEFT))
+				{
+					ptrBeePlayer->SetTexture(ptrSpriteManager->m_vTextureArray[3]);
+					ptrBeePlayer->SetFPS(1);
+					ptrBeePlayer->SetCollisionType(COLLISION_CIRCLE);
+				}
+				if (glfwGetKey(myWindow, GLFW_MOUSE_BUTTON_RIGHT))
+				{
+
+				}
+				if (glfwGetKey(myWindow, GLFW_MOUSE_BUTTON_MIDDLE))
+				{
+					ptrBeePlayer->SetTexture(ptrSpriteManager->m_vTextureArray[3], 8, 1);
+					ptrBeePlayer->SetFPS(8);
+					ptrBeePlayer->SetCollisionType(COLLISION_CIRCLE);
+				}
+
+
+
 #pragma endregion INPUT
 
 				//------------------   UPDATE LOGIC!------------------------------ //////////////////////////////////////////////////
@@ -276,39 +301,28 @@ int main()
 				myCursorPos.y = mouseYpos;
 
 				////LOGICA Bee! UPDATE POSITION Y Detectar Limite para eliminar
-				ptrBee->Update(deltaTime);
+				ptrBeePlayer->Update(deltaTime);
 
-				ptrBee->m_bIsMoving ? myAudioSource->SetVelocity(sourceSpeed, sourceSpeed, sourceSpeed) : myAudioSource->SetVelocity(0.f);
+				ptrBeePlayer->m_bIsMoving ? myAudioSource->SetVelocity(sourceSpeed, sourceSpeed, sourceSpeed) : myAudioSource->SetVelocity(0.f);
 
-				myAudioSource->SetPosition(ptrBee->GetPosition());
+				myAudioSource->SetPosition(ptrBeePlayer->GetPosition());
 
 
 
 				//Collisions
-				//ptrBall->Collides(*ptrBee) ? ptrBee->SetColor(1, 0, 0, 1) : ptrBee->SetColor(1, 1, 1, 1);
+				//ptrBall->Collides(*ptrBeePlayer) ? ptrBeePlayer->SetColor(1, 0, 0, 1) : ptrBeePlayer->SetColor(1, 1, 1, 1);
 				for (Sprite* staticSpritesCollisions : ptrSpriteManager->m_vSpriteArray)
 				{
-					if (staticSpritesCollisions->Collides(*ptrBee))
+					if (staticSpritesCollisions->Collides(*ptrBeePlayer))
 					{
-						ptrBee->SetColor(1, 0, 0, 1);
+						ptrBeePlayer->SetColor(1, 0, 0, 1);
 						staticSpritesCollisions->SetColor(1, 0, 0, 1);
 					}
 					else
 					{
-						ptrBee->SetColor(1, 1, 1, 1);
+						ptrBeePlayer->SetColor(1, 1, 1, 1);
 						staticSpritesCollisions->SetColor(1, 1, 1, 1);
 					}
-				}
-
-				if (ptrBall->Collides(*ptrBee))
-				{
-					ptrBee->SetColor(1, 0, 0, 1);
-					ptrBall->SetColor(1, 0, 0, 1);
-				}
-				else
-				{
-					ptrBee->SetColor(1, 1, 1, 1);
-					ptrBall->SetColor(1, 1, 1, 1);
 				}
 
 				if (deltaTime >= dangerTicks)
@@ -329,12 +343,13 @@ int main()
 #pragma region RENDER
 
 			//Borrar el backbuffer
-			lgfx_clearcolorbuffer(1.f, 1.f, 1.f);
+			//lgfx_clearcolorbuffer(1.f, 1.f, 1.f);
+			lgfx_clearcolorbuffer(0.f, 0.f, 0.f);
 
 			//Render IMGs////
 			//------Render BEE
 
-			ptrBee->Draw();
+			ptrBeePlayer->Draw();
 
 			for (Sprite* staticSprites : ptrSpriteManager->m_vSpriteArray)
 			{
@@ -374,9 +389,9 @@ int main()
 		//Liberar recursos
 
 #pragma region UNLOAD_TEXTURES
-		ptrBee->m_texture = nullptr;
-		delete ptrBee;
-		ptrBee = nullptr;
+		ptrBeePlayer->m_texture = nullptr;
+		delete ptrBeePlayer;
+		ptrBeePlayer = nullptr;
 		std::cout << "Liberar ptrBee \n";
 
 		ptrBall->m_texture = nullptr;
@@ -454,7 +469,13 @@ int main()
 	return 0;
 }
 
-
+void CallbackUpdateSpriteMouse(Sprite& _sprite, float _fDeltaTime)
+{
+	float updatedPosX = myCursorPos.x + _sprite.GetSize().x * 0.5f;
+	float updatedPosY = myCursorPos.y - _sprite.GetSize().y * 0.5f;
+	MyVec2D updatedPos = (myCursorPos.x - _sprite.GetSize().x*0.5f, myCursorPos.y - _sprite.GetSize().y*0.5f);
+	_sprite.SetPosition(myCursorPos);
+}
 
 void CallbackUpdateSprite(Sprite& _sprite, float _fDeltaTime)
 {
