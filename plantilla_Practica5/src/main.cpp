@@ -53,6 +53,10 @@ float fToleranceMovement = 10.f;
 
 /* VARIABLES PRACTICA 4*/
 const char* bee_fileName = "data/bee_anim.png";
+const char* ball_fileName = "data/ball.png";
+const char* box_fileName = "data/box.png";
+const char* circle_fileName = "data/circle.png";
+const char* rect_fileName = "data/rect.png";
 
 void CallbackUpdateSprite(Sprite& _sprite, float _fDeltaTime);
 
@@ -119,7 +123,7 @@ int main()
 		//CREATE LISTENER
 		AudioListener* myAudioListener = new AudioListener(0, 0, 0);
 		myAudioListener->SetPosition(weightWindowScreen * 0.5f, heightWindowScreen - 200.f, 0.f);
-
+		
 
 
 #pragma region LOAD_FONTS
@@ -146,16 +150,46 @@ int main()
 
 		SpriteManager* ptrSpriteManager = new SpriteManager();
 		ptrSpriteManager->LoadTexture(bee_fileName);
+		ptrSpriteManager->LoadTexture(ball_fileName);
+		ptrSpriteManager->LoadTexture(box_fileName);
 		std::cout << "Creacion ptrSpriteManager\n";
 
 		//Sprite Bee created
 		Sprite* ptrBee = new Sprite(ptrSpriteManager->m_vTextureArray[0], 8, 1);
 		ptrBee->SetFPS(8);
 		ptrBee->SetBlend(BLEND_ALPHA);
-		MyVec2D beeInitialPos(weightWindowScreen * 0.5f, heightWindowScreen * 0.5f);
-		ptrBee->SetPosition(beeInitialPos);
+		MyVec2D initialPosMiddleScreen(weightWindowScreen * 0.5f, heightWindowScreen * 0.5f);
+		ptrBee->SetPosition(initialPosMiddleScreen);
 		ptrBee->SetCallback(&CallbackUpdateSprite);
+		ptrBee->SetCollisionType(COLLISION_CIRCLE);
 		std::cout << "Creacion ptrBee\n";
+
+
+		Sprite* ptrBall = new Sprite(ptrSpriteManager->m_vTextureArray[1], 1, 1);
+		ptrBall->SetFPS(1);
+		ptrBall->SetBlend(BLEND_ALPHA);
+		ptrBall->SetPosition(initialPosMiddleScreen);
+		ptrBall->SetCallback(&CallbackUpdateSprite);
+		ptrBall->SetCollisionType(COLLISION_CIRCLE);
+		ptrSpriteManager->LoadSprite(ptrBall);
+
+		Sprite* ptrBox = new Sprite(ptrSpriteManager->m_vTextureArray[2], 1, 1);
+		ptrBox->SetFPS(1);
+		ptrBox->SetBlend(BLEND_ALPHA);
+		ptrBox->SetPosition(initialPosMiddleScreen.x*0.5f, initialPosMiddleScreen.y);
+		ptrBox->SetCallback(&CallbackUpdateSprite);
+		ptrBox->SetCollisionType(COLLISION_CIRCLE);
+		ptrSpriteManager->LoadSprite(ptrBox);
+
+
+		Sprite* ptrBeeStatic = new Sprite(ptrSpriteManager->m_vTextureArray[0], 8, 1);
+		ptrBeeStatic->SetFPS(1);
+		ptrBeeStatic->SetBlend(BLEND_ALPHA);
+		ptrBeeStatic->SetPosition((initialPosMiddleScreen.x * 0.5f) + initialPosMiddleScreen.x, initialPosMiddleScreen.y);
+		ptrBeeStatic->SetCallback(&CallbackUpdateSprite);
+		ptrBeeStatic->SetCollisionType(COLLISION_CIRCLE);
+		ptrSpriteManager->LoadSprite(ptrBeeStatic);
+
 
 #pragma endregion LOAD_TEXTURES
 
@@ -249,6 +283,34 @@ int main()
 				myAudioSource->SetPosition(ptrBee->GetPosition());
 
 
+
+				//Collisions
+				//ptrBall->Collides(*ptrBee) ? ptrBee->SetColor(1, 0, 0, 1) : ptrBee->SetColor(1, 1, 1, 1);
+				for (Sprite* staticSpritesCollisions : ptrSpriteManager->m_vSpriteArray)
+				{
+					if (staticSpritesCollisions->Collides(*ptrBee))
+					{
+						ptrBee->SetColor(1, 0, 0, 1);
+						staticSpritesCollisions->SetColor(1, 0, 0, 1);
+					}
+					else
+					{
+						ptrBee->SetColor(1, 1, 1, 1);
+						staticSpritesCollisions->SetColor(1, 1, 1, 1);
+					}
+				}
+
+				if (ptrBall->Collides(*ptrBee))
+				{
+					ptrBee->SetColor(1, 0, 0, 1);
+					ptrBall->SetColor(1, 0, 0, 1);
+				}
+				else
+				{
+					ptrBee->SetColor(1, 1, 1, 1);
+					ptrBall->SetColor(1, 1, 1, 1);
+				}
+
 				if (deltaTime >= dangerTicks)
 				{
 					deltaTime -= fixedTick;
@@ -273,6 +335,12 @@ int main()
 			//------Render BEE
 
 			ptrBee->Draw();
+
+			for (Sprite* staticSprites : ptrSpriteManager->m_vSpriteArray)
+			{
+				staticSprites->Draw();
+			}
+
 
 
 			lgfx_setcolor(1, 0, 0, 1);
@@ -310,6 +378,10 @@ int main()
 		delete ptrBee;
 		ptrBee = nullptr;
 		std::cout << "Liberar ptrBee \n";
+
+		ptrBall->m_texture = nullptr;
+		delete ptrBall;
+		ptrBall = nullptr;
 
 		ptrSpriteManager->UnloadTextures();
 		delete ptrSpriteManager;

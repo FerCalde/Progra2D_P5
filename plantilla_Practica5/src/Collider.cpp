@@ -7,6 +7,16 @@ Collider::Collider(const MyVec2D& _posCollider)
 {
 }
 
+void Collider::SetPosition(const MyVec2D _pos)
+{
+    m_positionCollider = _pos;
+}
+
+MyVec2D Collider::GetPosition() const
+{
+    return m_positionCollider;
+}
+
 bool Collider::CheckCircleCircle(const MyVec2D& _pos1, float _fRadius1, const MyVec2D& _pos2, float _fRadius2) const
 {
 	//Distance Centers < Sum Radius

@@ -14,6 +14,7 @@ Sprite::Sprite(const ltex_t* _tex, int _iHframes, int _iVframes)
 	SetScale(1, 1);
 	SetPivot(0.5f, 0.5f);
 	SetSizeUVAnimFrame();
+	SetColor(1.f, 1.f, 1.f, 1.f);
 }
 
 void Sprite::Update(float _fDeltaTime)
@@ -44,13 +45,25 @@ void Sprite::Draw() const
 	//float v1 = m_SizeUVAnimFrame.y;
 
 	lgfx_setblend(GetBlend());
+	lgfx_setcolor(GetRed(), GetGreen(), GetBlue(), GetAlpha());
 	//ltex_draw(GetTexture(), GetPosition().x, GetPosition().y);
 	ltex_drawrotsized(GetTexture(), GetPosition().x, GetPosition().y, GetRotation(), GetPivot().x, GetPivot().y, GetSize().x, GetSize().y, u0, v0, u1, v1);
+	
+	//lgfx_setcolor(1,1,1,1); //Restablecer a blanco para que no afecte a otros Draws
 }
 
 void Sprite::SetCallback(CallbackFunc _func)
 {
 	m_CallbackFunc = _func;
+}
+
+void* Sprite::GetUserData()
+{
+	return nullptr;
+}
+
+void Sprite::SetUserData(void* _data)
+{
 }
 
 const ltex_t* Sprite::GetTexture() const
@@ -109,7 +122,7 @@ void Sprite::SetColor(float _r, float _g, float _b, float _a)
 	m_fRed = _r;
 	m_fGreen = _g;
 	m_fBlue = _b;
-	m_fRotation = _a;
+	m_fAlpha = _a;
 }
 
 const MyVec2D& Sprite::GetPosition() const
@@ -119,13 +132,19 @@ const MyVec2D& Sprite::GetPosition() const
 
 void Sprite::SetPosition(const MyVec2D& _pos)
 {
-	m_Position = _pos;
+	//m_Position = _pos;
+	SetPosition(_pos.x, _pos.y);
 }
 
 void Sprite::SetPosition(float _posX, float _posY)
 {
 	m_Position.x = _posX;
 	m_Position.y = _posY;
+
+	if (m_ptrCollider)
+	{
+		m_ptrCollider->SetPosition(m_Position);
+	}
 }
 
 float Sprite::GetRotation() const
@@ -242,28 +261,27 @@ void Sprite::SetCurrentFrame(int _iFrame)
 
 void Sprite::SetCollisionType(CollisionType _type)
 {
-	delete m_Collider;
-	m_Collider = nullptr;
+	delete m_ptrCollider;
+	m_ptrCollider = nullptr;
 	m_CollisionType = _type;
 	switch (m_CollisionType)
 	{
 	case COLLISION_CIRCLE:
 	{
-
 		float auxRadius = (m_Size.x*0.5f) >= (m_Size.y*0.5f) ? (m_Size.x*0.5f) : (m_Size.y*0.5f);
 
-		m_Collider = new CircleCollider(m_Position, auxRadius); //@TEST -> Position is in middle Sprite
+		m_ptrCollider = new CircleCollider(m_Position, auxRadius); //@TEST -> Position is in middle Sprite
 	} break;
 
 	case COLLISION_RECT:
 	{
 		
-		//m_Collider = new RectCollider();
+		//m_ptrCollider = new RectCollider();
 	} break;
 
 	case COLLISION_PIXELS:
 	{
-		//m_Collider = new PixelsCollider();
+		//m_ptrCollider = new PixelsCollider();
 	} break;
 
 	default:
@@ -278,12 +296,12 @@ CollisionType Sprite::GetCollisionType() const
 
 const Collider* Sprite::GetCollider() const
 {
-	return m_Collider;
+	return m_ptrCollider;
 }
 
 bool Sprite::Collides(const Sprite& _other) const
 {
-	return m_Collider->Collides(*(_other.GetCollider()));
+	return m_ptrCollider->Collides(*(_other.GetCollider()));
 }
 
 
@@ -312,6 +330,16 @@ ltex_t* SpriteManager::GenerateTexture(const char* _fileName)
 	return  textureCreated;
 }
 
+void SpriteManager::LoadSprite(Sprite* _sprite)
+{
+	m_vSpriteArray.push_back(_sprite);
+}
+
+void SpriteManager::UnloadSprite()
+{
+	//@TODO: DESTROY
+}
+
 void SpriteManager::LoadTexture(const char* _fileName)
 {
 	int* widthImgSize = new int;
@@ -336,9 +364,14 @@ void SpriteManager::LoadTexture(const char* _fileName)
 
 void SpriteManager::UnloadTextures()
 {
+	//Destroy all Sprites first
+
+	//Destroy and free Textures
 	for (ltex_t* texLoaded : m_vTextureArray)
 	{
 		ltex_free(texLoaded);
+		//delete texLoaded;
+		texLoaded = nullptr;
 	}
 }
 

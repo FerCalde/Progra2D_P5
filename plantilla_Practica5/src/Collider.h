@@ -24,7 +24,8 @@ public:
 
 	virtual bool Collides(const MyVec2D& _pixelsPos, const MyVec2D& _pixelSize, const uint8_t* _pixels) const = 0;
 
-
+	void SetPosition(const MyVec2D _pos);
+	MyVec2D GetPosition() const;
 protected:
 
 	//Checkers Methods

@@ -62,6 +62,7 @@ public:
 	float GetBlue() const;
 	float GetAlpha() const;
 	void SetColor(float _r, float _g, float _b, float _a);
+	
 
 #pragma region Transform
 	MyVec2D m_Position;
@@ -125,7 +126,7 @@ public:
 	//COLLIDER STUFF
 private:
 	CollisionType m_CollisionType = COLLISION_NONE;
-	Collider* m_Collider = nullptr;
+	Collider* m_ptrCollider = nullptr;
 	
 public:
 	void SetCollisionType(CollisionType _type);
@@ -149,12 +150,14 @@ class SpriteManager
 	*/
 	ltex_t* GenerateTexture(const char* _fileName);
 	
+
+	void LoadSprite(Sprite* _sprite);
+	void UnloadSprite();
 	void LoadTexture(const char* _fileName);
 	void UnloadTextures();
 
 	void CallbackUpdateSprite(Sprite& _sprite, float _fDeltaTime);
 	
-
 	std::vector<Sprite*> m_vSpriteArray;
 	std::vector<ltex_t*> m_vTextureArray;
 };
