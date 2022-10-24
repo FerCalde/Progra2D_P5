@@ -160,13 +160,13 @@ int main()
 		std::cout << "Creacion ptrSpriteManager\n";
 
 		//Sprite Bee created
-		Sprite* ptrBeePlayer = new Sprite(ptrSpriteManager->m_vTextureArray[3], 1, 1);
+		Sprite* ptrBeePlayer = new Sprite(ptrSpriteManager->m_vTextureArray[4], 1, 1);
 		ptrBeePlayer->SetFPS(1);
 		ptrBeePlayer->SetBlend(BLEND_ALPHA);
 		MyVec2D initialPosMiddleScreen(weightWindowScreen * 0.5f, heightWindowScreen * 0.5f);
 		ptrBeePlayer->SetPosition(initialPosMiddleScreen);
 		ptrBeePlayer->SetCallback(&CallbackUpdateSpriteMouse);
-		ptrBeePlayer->SetCollisionType(COLLISION_CIRCLE);
+		ptrBeePlayer->SetCollisionType(COLLISION_RECT);
 		std::cout << "Creacion ptrBee\n";
 
 
@@ -183,7 +183,7 @@ int main()
 		ptrBox->SetBlend(BLEND_ALPHA);
 		ptrBox->SetPosition(initialPosMiddleScreen.x*0.5f, initialPosMiddleScreen.y);
 		ptrBox->SetCallback(&CallbackUpdateSprite);
-		ptrBox->SetCollisionType(COLLISION_CIRCLE);
+		ptrBox->SetCollisionType(COLLISION_RECT);
 		ptrSpriteManager->LoadSprite(ptrBox);
 
 

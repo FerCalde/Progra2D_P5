@@ -276,6 +276,8 @@ void Sprite::SetCollisionType(CollisionType _type)
 	case COLLISION_RECT:
 	{
 		
+		m_ptrCollider = new RectCollider(m_Position, m_Size); //@TEST -> Position is in middle Sprite
+
 		//m_ptrCollider = new RectCollider();
 	} break;
 
