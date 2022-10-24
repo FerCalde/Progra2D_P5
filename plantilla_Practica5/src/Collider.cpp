@@ -1,4 +1,12 @@
 #include "Collider.h"
+#include <algorithm> //std::clamp is included in <algorithm> in C++17
+
+
+template <typename T>
+T Clamp(const T& _value, const T& _lowerValue, const T& _upperValue) {
+	return std::max(_lowerValue, std::min(_value, _upperValue));
+}
+
 
 #pragma region COLLIDER_BASE
 
@@ -28,7 +36,26 @@ bool Collider::CheckCircleCircle(const MyVec2D& _pos1, float _fRadius1, const My
 
 bool Collider::CheckCircleRect(const MyVec2D& _circlePos, float _fCircleRadius, const MyVec2D& _rectPos, const MyVec2D& _rectSize) const
 {
-	return false;
+	float limitRightRect = _rectPos.x + _rectSize.x * 0.5f;
+	float limitLeftRect = _rectPos.x - _rectSize.x * 0.5f;
+	float limitTopRect = _rectPos.y - _rectSize.y * 0.5f;
+	float limitBottomRect = _rectPos.y + _rectSize.y * 0.5f;
+	
+
+	//Closest Point on Rect to Circle
+	float closestX = Clamp(_circlePos.x, limitLeftRect, limitRightRect);
+	float closestY = Clamp(_circlePos.y, limitTopRect, limitBottomRect);
+
+	//Distance between Circle and Closest Point
+	MyVec2D closestPoint{ closestX, closestY };
+	if (closestPoint.Distance(_circlePos) <= _fCircleRadius)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 bool Collider::CheckCirclePixels(const MyVec2D& _circlePos, float _fCircleRadius, const MyVec2D& _pixelsPos, const MyVec2D& _pixelSize, const uint8_t* _pixels) const
