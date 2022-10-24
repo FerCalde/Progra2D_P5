@@ -160,8 +160,8 @@ int main()
 		std::cout << "Creacion ptrSpriteManager\n";
 
 		//Sprite Bee created
-		Sprite* ptrBeePlayer = new Sprite(ptrSpriteManager->m_vTextureArray[4], 1, 1);
-		ptrBeePlayer->SetFPS(1);
+		Sprite* ptrBeePlayer = new Sprite(ptrSpriteManager->m_vTextureArray[0], 8, 1);
+		ptrBeePlayer->SetFPS(8);
 		ptrBeePlayer->SetBlend(BLEND_ALPHA);
 		MyVec2D initialPosMiddleScreen(weightWindowScreen * 0.5f, heightWindowScreen * 0.5f);
 		ptrBeePlayer->SetPosition(initialPosMiddleScreen);
@@ -273,19 +273,22 @@ int main()
 				}
 
 				//Change Sprites 
-				if (glfwGetKey(myWindow, GLFW_MOUSE_BUTTON_LEFT))
+				if (glfwGetMouseButton(myWindow, GLFW_MOUSE_BUTTON_LEFT))
 				{
 					ptrBeePlayer->SetTexture(ptrSpriteManager->m_vTextureArray[3]);
 					ptrBeePlayer->SetFPS(1);
 					ptrBeePlayer->SetCollisionType(COLLISION_CIRCLE);
 				}
-				if (glfwGetKey(myWindow, GLFW_MOUSE_BUTTON_RIGHT))
+				if (glfwGetMouseButton(myWindow, GLFW_MOUSE_BUTTON_RIGHT))
 				{
+					ptrBeePlayer->SetTexture(ptrSpriteManager->m_vTextureArray[4]);
+					ptrBeePlayer->SetFPS(1);
+					ptrBeePlayer->SetCollisionType(COLLISION_RECT);
 
 				}
-				if (glfwGetKey(myWindow, GLFW_MOUSE_BUTTON_MIDDLE))
+				if (glfwGetMouseButton(myWindow, GLFW_MOUSE_BUTTON_MIDDLE))
 				{
-					ptrBeePlayer->SetTexture(ptrSpriteManager->m_vTextureArray[3], 8, 1);
+					ptrBeePlayer->SetTexture(ptrSpriteManager->m_vTextureArray[0], 8, 1);
 					ptrBeePlayer->SetFPS(8);
 					ptrBeePlayer->SetCollisionType(COLLISION_CIRCLE);
 				}

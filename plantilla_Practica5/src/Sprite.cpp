@@ -77,6 +77,7 @@ void Sprite::SetTexture(const ltex_t* _tex, int _iHframes, int _iVframes)
 	m_iHframes = _iHframes;
 	m_iVframes = _iVframes;
 
+	SetSize(m_Scale);
 	SetSizeUVAnimFrame();
 }
 
