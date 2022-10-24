@@ -51,58 +51,42 @@ bool Collider::CheckRectRect(const MyVec2D& _rectPos1, const MyVec2D& _rectSize1
 
 
 	//Check Rect2 inside Rect1
-	
-	bool bRect2RightLimitInside = (limitRightRect2 <= limitRightRect1) && (limitRightRect2 >=limitLeftRect1 );
-	bool bRect2LeftLimitInside = (limitLeftRect2 <=limitRightRect1 ) && (limitLeftRect2>=limitLeftRect1);
-	
-	bool bRect2XInsideRect1 = false;
-	
+
+	bool bRect2RightLimitInside = (limitRightRect2 <= limitRightRect1) && (limitRightRect2 >= limitLeftRect1);
+	bool bRect2LeftLimitInside = (limitLeftRect2 <= limitRightRect1) && (limitLeftRect2 >= limitLeftRect1);
+
 	if (bRect2RightLimitInside || bRect2LeftLimitInside)
-	{		
+	{
 		bool bRect2TopLimitInside = (limitTopRect2 >= limitTopRect1) && (limitTopRect2 <= limitBottomRect1);
 		bool bRect2BottomLimitInside = (limitBottomRect2 >= limitTopRect1) && (limitBottomRect2 <= limitBottomRect1);
-
-		bool bRect2YInsideRect1 = false;
 
 		if (bRect2TopLimitInside || bRect2BottomLimitInside)
 		{
 			return true;
 		}
 	}
-	
 
-	
+
+
 	//Check Rect 1 inside Rect2
 	bool bRect1RightLimitInside = (limitRightRect1 <= limitRightRect2) && (limitRightRect1 >= limitLeftRect2);
 	bool bRect1LeftLimitInside = (limitLeftRect1 <= limitRightRect2) && (limitLeftRect1 >= limitLeftRect2);
-	
-	bool bRect1XInsideRect2 = false;
 
 	if (bRect1RightLimitInside || bRect1LeftLimitInside)
 	{
-		bRect1XInsideRect2 = true;
+		bool bRect1TopLimitInside = (limitTopRect1 >= limitTopRect2) && (limitTopRect1 <= limitBottomRect2);
+		bool bRect1BottomLimitInside = (limitBottomRect1 >= limitTopRect2) && (limitBottomRect1 <= limitBottomRect2);
+
+		bool bRect1YInsideRect2 = false;
+		if (bRect1TopLimitInside || bRect1BottomLimitInside)
+		{
+			return true;
+		}
 	}
 
-	bool bRect1TopLimitInside = (limitTopRect1 >= limitTopRect2) && (limitTopRect1<= limitBottomRect2);
-	bool bRect1BottomLimitInside = (limitBottomRect1 >= limitTopRect2) && (limitBottomRect1 <= limitBottomRect2);
 
-	bool bRect1YInsideRect2 = false;
-	if (bRect1TopLimitInside || bRect1BottomLimitInside)
-	{
-		bRect1YInsideRect2 = true;
-	}
-
-
-	//FinalChecks
-
-	if (bRect1XInsideRect2 && bRect1YInsideRect2)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	//If there is not Collision (No Rect inside each other)
+	return false;
 }
 
 bool Collider::CheckRectPixels(const MyVec2D& _rectPos, const MyVec2D& _rectSize, const MyVec2D& _pixelsPos, const MyVec2D& _pixelSize, const uint8_t* _pixels) const
