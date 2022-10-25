@@ -52,7 +52,8 @@ float fToleranceMovement = 10.f;
 
 
 /* VARIABLES PRACTICA 4*/
-const char* bee_fileName = "data/bee_anim.png";
+const char* bee_fileName = "data/bee.png";
+const char* beeAnim_fileName = "data/bee_anim.png";
 const char* ball_fileName = "data/ball.png";
 const char* box_fileName = "data/box.png";
 const char* circle_fileName = "data/circle.png";
@@ -160,8 +161,8 @@ int main()
 		std::cout << "Creacion ptrSpriteManager\n";
 
 		//Sprite Bee created
-		Sprite* ptrBeePlayer = new Sprite(ptrSpriteManager->m_vTextureArray[0], 8, 1);
-		ptrBeePlayer->SetFPS(1);
+		Sprite* ptrBeePlayer = new Sprite(ptrSpriteManager->m_vTextureArray[0]);
+		ptrBeePlayer->SetFPS(0);
 		ptrBeePlayer->SetBlend(BLEND_ALPHA);
 		MyVec2D initialPosMiddleScreen(weightWindowScreen * 0.5f, heightWindowScreen * 0.5f);
 		ptrBeePlayer->SetPosition(initialPosMiddleScreen);
@@ -170,7 +171,7 @@ int main()
 		std::cout << "Creacion ptrBee\n";
 
 
-		Sprite* ptrBall = new Sprite(ptrSpriteManager->m_vTextureArray[1], 1, 1);
+		Sprite* ptrBall = new Sprite(ptrSpriteManager->m_vTextureArray[1]);
 		ptrBall->SetFPS(0);
 		ptrBall->SetBlend(BLEND_ALPHA);
 		ptrBall->SetPosition(initialPosMiddleScreen);
@@ -178,7 +179,7 @@ int main()
 		ptrBall->SetCollisionType(COLLISION_CIRCLE);
 		ptrSpriteManager->LoadSprite(ptrBall);
 
-		Sprite* ptrBox = new Sprite(ptrSpriteManager->m_vTextureArray[2], 1, 1);
+		Sprite* ptrBox = new Sprite(ptrSpriteManager->m_vTextureArray[2]);
 		ptrBox->SetFPS(0);
 		ptrBox->SetBlend(BLEND_ALPHA);
 		ptrBox->SetPosition(initialPosMiddleScreen.x*0.5f, initialPosMiddleScreen.y);
@@ -187,7 +188,7 @@ int main()
 		ptrSpriteManager->LoadSprite(ptrBox);
 
 
-		Sprite* ptrBeeStatic = new Sprite(ptrSpriteManager->m_vTextureArray[0], 8, 1);
+		Sprite* ptrBeeStatic = new Sprite(ptrSpriteManager->m_vTextureArray[0]);
 		ptrBeeStatic->SetFPS(0);
 		ptrBeeStatic->SetBlend(BLEND_ALPHA);
 		ptrBeeStatic->SetPosition((initialPosMiddleScreen.x * 0.5f) + initialPosMiddleScreen.x, initialPosMiddleScreen.y);

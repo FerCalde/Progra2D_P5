@@ -126,11 +126,57 @@ bool Collider::CheckRectPixels(const MyVec2D& _rectPos, const MyVec2D& _rectSize
 {
 	if (CheckRectRect(_rectPos, _rectSize, _pixelsPos, _pixelSize))
 	{
-		return true;
+		//x values
+		std::vector<float> xCrossPossible;
+		//RectPossible Values
+		xCrossPossible.push_back(_rectPos.x - (_rectSize.x / 2.f));
+		xCrossPossible.push_back(_rectPos.x + (_rectSize.x / 2.f));
+		//Pixels possible values
+		xCrossPossible.push_back(_pixelsPos.x - (_pixelSize.x / 2.f));
+		xCrossPossible.push_back(_pixelsPos.x + (_pixelSize.x / 2.f));
+		std::sort(xCrossPossible.begin(), xCrossPossible.end()); //Index 1 & 2 are the good values
+		//Min & Max X del punto de corte
+		float minX = xCrossPossible[1];
+		float maxX = xCrossPossible[2];
+
+		//y values
+		std::vector<float> yCrossPossible;
+		//RectPossible Values
+		yCrossPossible.push_back(_rectPos.y - (_rectSize.y / 2.f));
+		yCrossPossible.push_back(_rectPos.y + (_rectSize.y / 2.f));
+		//Pixels possible values
+		yCrossPossible.push_back(_pixelsPos.y - (_pixelSize.y / 2.f));
+		yCrossPossible.push_back(_pixelsPos.y + (_pixelSize.y / 2.f));
+		std::sort(yCrossPossible.begin(), yCrossPossible.end()); //Index 1 & 2 are the good values
+		//Min & Max Y del punto de corte en valor absoluto de pantalla
+		float minY = yCrossPossible[1];
+		float maxY = yCrossPossible[2];
+
+		//Puntos de corte finales en valor relativo al centro de los pixeles
+		MyVec2D minCrossing(minX, minY);
+		MyVec2D maxCrossing(maxX, maxY);
+
+		int xMinPixelOffset = minCrossing.x - (_pixelsPos.x - (_pixelSize.x / 2.f));
+		int yMinPixelOffset = minCrossing.y - (_pixelsPos.y - (_pixelSize.y / 2.f));
+
+		int xMaxPixelOffset = maxCrossing.x - (_pixelsPos.x - (_pixelSize.x / 2.f));
+		int yMaxPixelOffset = maxCrossing.y - (_pixelsPos.y - (_pixelSize.y / 2.f));
+
+		for (unsigned int y = 0; y < (yMaxPixelOffset - yMinPixelOffset); ++y)
+		{
+			int yPixelIndex = y + yMinPixelOffset;
+			for (unsigned int x = 0; x < (xMaxPixelOffset - xMinPixelOffset); ++x)
+			{
+				int xPixelIndex = x + xMinPixelOffset;
+
+				int pixelAlphaIndex = ((yPixelIndex * _pixelSize.x + xPixelIndex) * 4) + 3;
+				if (_pixels[pixelAlphaIndex] != 0)
+				{
+					return true;
+				}
+			}
+		}
 	}
-
-
-
 	return false;
 }
 
