@@ -124,60 +124,78 @@ bool Collider::CheckRectRect(const MyVec2D& _rectPos1, const MyVec2D& _rectSize1
 
 bool Collider::CheckRectPixels(const MyVec2D& _rectPos, const MyVec2D& _rectSize, const MyVec2D& _pixelsPos, const MyVec2D& _pixelSize, const uint8_t* _pixels) const
 {
-	if (CheckRectRect(_rectPos, _rectSize, _pixelsPos, _pixelSize))
+	if (!CheckRectRect(_rectPos, _rectSize, _pixelsPos, _pixelSize))
 	{
-		//x values
-		std::vector<float> xCrossPossible;
-		//RectPossible Values
-		xCrossPossible.push_back(_rectPos.x - (_rectSize.x / 2.f));
-		xCrossPossible.push_back(_rectPos.x + (_rectSize.x / 2.f));
-		//Pixels possible values
-		xCrossPossible.push_back(_pixelsPos.x - (_pixelSize.x / 2.f));
-		xCrossPossible.push_back(_pixelsPos.x + (_pixelSize.x / 2.f));
-		std::sort(xCrossPossible.begin(), xCrossPossible.end()); //Index 1 & 2 are the good values
-		//Min & Max X del punto de corte
-		float minX = xCrossPossible[1];
-		float maxX = xCrossPossible[2];
+		return false;
+	}
+		
+	//Puntos de cortes
+	float limitRightPixel = _pixelsPos.x + _pixelSize.x * 0.5f;
+	float limitLeftPixel = _pixelsPos.x - _pixelSize.x * 0.5f;
+	float limitTopPixel = _pixelsPos.y - _pixelSize.y * 0.5f;
+	float limitBottomPixel = _pixelsPos.y + _pixelSize.y * 0.5f;
 
-		//y values
-		std::vector<float> yCrossPossible;
-		//RectPossible Values
-		yCrossPossible.push_back(_rectPos.y - (_rectSize.y / 2.f));
-		yCrossPossible.push_back(_rectPos.y + (_rectSize.y / 2.f));
-		//Pixels possible values
-		yCrossPossible.push_back(_pixelsPos.y - (_pixelSize.y / 2.f));
-		yCrossPossible.push_back(_pixelsPos.y + (_pixelSize.y / 2.f));
-		std::sort(yCrossPossible.begin(), yCrossPossible.end()); //Index 1 & 2 are the good values
-		//Min & Max Y del punto de corte en valor absoluto de pantalla
-		float minY = yCrossPossible[1];
-		float maxY = yCrossPossible[2];
+	float limitRightRect = _rectPos.x + _rectSize.x * 0.5f;
+	float limitLeftRect = _rectPos.x - _rectSize.x * 0.5f;
+	float limitTopRect = _rectPos.y - _rectSize.y * 0.5f;
+	float limitBottomRect = _rectPos.y + _rectSize.y * 0.5f;
 
-		//Puntos de corte finales en valor relativo al centro de los pixeles
-		MyVec2D minCrossing(minX, minY);
-		MyVec2D maxCrossing(maxX, maxY);
+	
+	//Como sabemos que hay un punto de corte, se puede calcular el area en base a los valores intermedios de cada eje
+	std::vector<float> vIntersectionsX;
+	vIntersectionsX.push_back(limitLeftPixel);
+	vIntersectionsX.push_back(limitRightPixel);
+	vIntersectionsX.push_back(limitLeftRect);
+	vIntersectionsX.push_back(limitRightRect);
 
-		int xMinPixelOffset = minCrossing.x - (_pixelsPos.x - (_pixelSize.x / 2.f));
-		int yMinPixelOffset = minCrossing.y - (_pixelsPos.y - (_pixelSize.y / 2.f));
+	std::sort(vIntersectionsX.begin(), vIntersectionsX.end());
+	MyVec2D intersectionPointsX{ vIntersectionsX[1],vIntersectionsX[2] };
 
-		int xMaxPixelOffset = maxCrossing.x - (_pixelsPos.x - (_pixelSize.x / 2.f));
-		int yMaxPixelOffset = maxCrossing.y - (_pixelsPos.y - (_pixelSize.y / 2.f));
+	std::vector<float> vIntersectionsY;
+	vIntersectionsY.push_back(limitTopPixel);
+	vIntersectionsY.push_back(limitBottomPixel);
+	vIntersectionsY.push_back(limitTopRect);
+	vIntersectionsY.push_back(limitBottomRect);
 
-		for (unsigned int y = 0; y < (yMaxPixelOffset - yMinPixelOffset); ++y)
+	std::sort(vIntersectionsY.begin(), vIntersectionsY.end());
+	MyVec2D intersectionPointsY{ vIntersectionsY[1],vIntersectionsY[2] };
+	
+
+	//area de interseccion = intersectionPointsX & intersectionPointsY
+	//Coger el pixel relativo a la posicion del y el punto de corte
+	int xPixelMin = intersectionPointsX.x - limitLeftPixel;
+	int xPixelMax = intersectionPointsX.y - limitLeftPixel;
+	int yPixelMin = intersectionPointsY.x - limitTopPixel;
+	int yPixelMax = intersectionPointsY.y - limitTopPixel;
+
+
+	int xLenghtArea = xPixelMax - xPixelMin;
+	int yLenghtArea = yPixelMax - yPixelMin;
+
+	//Iterate the Area
+	for (unsigned int i = 0; i < yLenghtArea; i++)
+	{
+		int yPixel1Index = yPixelMin + i;
+		int yPixel2Index = yPixelMin + i;
+
+		for (unsigned int j = 0; j < xLenghtArea; j++)
 		{
-			int yPixelIndex = y + yMinPixelOffset;
-			for (unsigned int x = 0; x < (xMaxPixelOffset - xMinPixelOffset); ++x)
-			{
-				int xPixelIndex = x + xMinPixelOffset;
+			int xPixel1Index = xPixelMin + j;
 
-				int pixelAlphaIndex = ((yPixelIndex * _pixelSize.x + xPixelIndex) * 4) + 3;
-				if (_pixels[pixelAlphaIndex] != 0)
-				{
-					return true;
-				}
+			int pixel1IndexAbsolut = ((yPixel1Index * _pixelSize.x + xPixel1Index) * 4) + 3;
+3;
+
+			if (_pixels[pixel1IndexAbsolut] != 0)
+			{
+				return true;
 			}
 		}
+
 	}
+
+
 	return false;
+	
 }
 
 bool Collider::CheckPixelsPixels(const MyVec2D& _pixelsPos1, const MyVec2D& _pixelSize1, const uint8_t* _pixels1, const MyVec2D& _pixelsPos2, const MyVec2D& _pixelSize2, const uint8_t* _pixels2) const
@@ -217,19 +235,17 @@ bool Collider::CheckPixelsPixels(const MyVec2D& _pixelsPos1, const MyVec2D& _pix
 	std::sort(vIntersectionsY.begin(), vIntersectionsY.end());
 	MyVec2D yCrossPoints{ vIntersectionsY[1],vIntersectionsY[2] };
 
-	MyVec2D minCrossPoint{ xCrossPoints.x, yCrossPoints.x };
-	MyVec2D maxCrossPoint{ xCrossPoints.y, yCrossPoints.y };
-	//area de interseccion = xCrossPoints & yCrossPoints
+	//area de interseccion = intersectionPointsX & intersectionPointsY
 	//Coger el pixel relativo a la posicion de cada sprite y el punto de corte
-	int xPixel1Min = minCrossPoint.x - limitLeftPixel1;
-	int xPixel1Max = maxCrossPoint.x - limitLeftPixel1;
-	int yPixel1Min = minCrossPoint.y - limitTopPixel1;
-	int yPixel1Max = maxCrossPoint.y - limitTopPixel1;
+	int xPixel1Min = xCrossPoints.x - limitLeftPixel1;
+	int xPixel1Max = xCrossPoints.y - limitLeftPixel1;
+	int yPixel1Min = yCrossPoints.x - limitTopPixel1;
+	int yPixel1Max = yCrossPoints.y - limitTopPixel1;
 
-	int xPixel2Min = minCrossPoint.x - limitLeftPixel2;
-	int xPixel2Max = maxCrossPoint.x - limitLeftPixel2;
-	int yPixel2Min = minCrossPoint.y - limitTopPixel2;
-	int yPixel2Max = maxCrossPoint.y - limitTopPixel2;
+	int xPixel2Min = xCrossPoints.x - limitLeftPixel2;
+	int xPixel2Max = xCrossPoints.y - limitLeftPixel2;
+	int yPixel2Min = yCrossPoints.x - limitTopPixel2;
+	int yPixel2Max = yCrossPoints.y - limitTopPixel2;
 
 	int xLenghtArea = xPixel1Max - xPixel1Min;
 	int yLenghtArea = yPixel1Max - yPixel1Min;
