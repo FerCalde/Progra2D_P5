@@ -477,7 +477,8 @@ void CallbackUpdateSpriteMouse(Sprite& _sprite, float _fDeltaTime)
 	float updatedPosX = myCursorPos.x - _sprite.GetSize().x *0.25f;
 	float updatedPosY = myCursorPos.y + _sprite.GetSize().y *0.25f;
 	MyVec2D updatedPos = (myCursorPos.x - _sprite.GetSize().x*0.5f, myCursorPos.y - _sprite.GetSize().y*0.5f);
-	_sprite.SetPosition(updatedPosX, updatedPosY);
+	_sprite.SetPosition(myCursorPos);
+	//_sprite.SetPosition(updatedPosX, updatedPosY);
 }
 
 void CallbackUpdateSprite(Sprite& _sprite, float _fDeltaTime)
