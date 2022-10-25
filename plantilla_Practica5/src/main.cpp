@@ -161,17 +161,17 @@ int main()
 
 		//Sprite Bee created
 		Sprite* ptrBeePlayer = new Sprite(ptrSpriteManager->m_vTextureArray[0], 8, 1);
-		ptrBeePlayer->SetFPS(8);
+		ptrBeePlayer->SetFPS(1);
 		ptrBeePlayer->SetBlend(BLEND_ALPHA);
 		MyVec2D initialPosMiddleScreen(weightWindowScreen * 0.5f, heightWindowScreen * 0.5f);
 		ptrBeePlayer->SetPosition(initialPosMiddleScreen);
 		ptrBeePlayer->SetCallback(&CallbackUpdateSpriteMouse);
-		ptrBeePlayer->SetCollisionType(COLLISION_RECT);
+		ptrBeePlayer->SetCollisionType(COLLISION_PIXELS);
 		std::cout << "Creacion ptrBee\n";
 
 
 		Sprite* ptrBall = new Sprite(ptrSpriteManager->m_vTextureArray[1], 1, 1);
-		ptrBall->SetFPS(1);
+		ptrBall->SetFPS(0);
 		ptrBall->SetBlend(BLEND_ALPHA);
 		ptrBall->SetPosition(initialPosMiddleScreen);
 		ptrBall->SetCallback(&CallbackUpdateSprite);
@@ -179,7 +179,7 @@ int main()
 		ptrSpriteManager->LoadSprite(ptrBall);
 
 		Sprite* ptrBox = new Sprite(ptrSpriteManager->m_vTextureArray[2], 1, 1);
-		ptrBox->SetFPS(1);
+		ptrBox->SetFPS(0);
 		ptrBox->SetBlend(BLEND_ALPHA);
 		ptrBox->SetPosition(initialPosMiddleScreen.x*0.5f, initialPosMiddleScreen.y);
 		ptrBox->SetCallback(&CallbackUpdateSprite);
@@ -188,11 +188,11 @@ int main()
 
 
 		Sprite* ptrBeeStatic = new Sprite(ptrSpriteManager->m_vTextureArray[0], 8, 1);
-		ptrBeeStatic->SetFPS(1);
+		ptrBeeStatic->SetFPS(0);
 		ptrBeeStatic->SetBlend(BLEND_ALPHA);
 		ptrBeeStatic->SetPosition((initialPosMiddleScreen.x * 0.5f) + initialPosMiddleScreen.x, initialPosMiddleScreen.y);
 		ptrBeeStatic->SetCallback(&CallbackUpdateSprite);
-		ptrBeeStatic->SetCollisionType(COLLISION_CIRCLE);
+		ptrBeeStatic->SetCollisionType(COLLISION_PIXELS);
 		ptrSpriteManager->LoadSprite(ptrBeeStatic);
 
 
@@ -289,8 +289,8 @@ int main()
 				if (glfwGetMouseButton(myWindow, GLFW_MOUSE_BUTTON_MIDDLE))
 				{
 					ptrBeePlayer->SetTexture(ptrSpriteManager->m_vTextureArray[0], 8, 1);
-					ptrBeePlayer->SetFPS(8);
-					ptrBeePlayer->SetCollisionType(COLLISION_CIRCLE);
+					ptrBeePlayer->SetFPS(0);
+					ptrBeePlayer->SetCollisionType(COLLISION_PIXELS);
 				}
 
 
@@ -474,10 +474,10 @@ int main()
 
 void CallbackUpdateSpriteMouse(Sprite& _sprite, float _fDeltaTime)
 {
-	float updatedPosX = myCursorPos.x + _sprite.GetSize().x * 0.5f;
-	float updatedPosY = myCursorPos.y - _sprite.GetSize().y * 0.5f;
+	float updatedPosX = myCursorPos.x - _sprite.GetSize().x *0.25f;
+	float updatedPosY = myCursorPos.y + _sprite.GetSize().y *0.25f;
 	MyVec2D updatedPos = (myCursorPos.x - _sprite.GetSize().x*0.5f, myCursorPos.y - _sprite.GetSize().y*0.5f);
-	_sprite.SetPosition(myCursorPos);
+	_sprite.SetPosition(updatedPosX, updatedPosY);
 }
 
 void CallbackUpdateSprite(Sprite& _sprite, float _fDeltaTime)

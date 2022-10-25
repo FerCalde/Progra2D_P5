@@ -271,20 +271,20 @@ void Sprite::SetCollisionType(CollisionType _type)
 	{
 		float auxRadius = (m_Size.x*0.5f) >= (m_Size.y*0.5f) ? (m_Size.x*0.5f) : (m_Size.y*0.5f);
 
-		m_ptrCollider = new CircleCollider(m_Position, auxRadius); //@TEST -> Position is in middle Sprite
+		m_ptrCollider = new CircleCollider(m_Position, auxRadius); //@DONE -> Position is in middle Sprite
 	} break;
 
 	case COLLISION_RECT:
 	{
-		
-		m_ptrCollider = new RectCollider(m_Position, m_Size); //@TEST -> Position is in middle Sprite
+		m_ptrCollider = new RectCollider(m_Position, m_Size); //@DONE -> Position is in middle Sprite
 
-		//m_ptrCollider = new RectCollider();
 	} break;
 
 	case COLLISION_PIXELS:
 	{
-		//m_ptrCollider = new PixelsCollider();
+		unsigned char* auxPixelsTexture = new unsigned char[m_texture->width * m_texture->height * 4];
+		ltex_getpixels(m_texture, auxPixelsTexture);
+		m_ptrCollider = new PixelsCollider(m_Position, m_Size, auxPixelsTexture);
 	} break;
 
 	default:

@@ -1,6 +1,6 @@
 #include "Collider.h"
 #include <algorithm> //std::clamp is included in <algorithm> in C++17
-
+#include <vector>
 
 template <typename T>
 T Clamp(const T& _value, const T& _lowerValue, const T& _upperValue) {
@@ -40,7 +40,7 @@ bool Collider::CheckCircleRect(const MyVec2D& _circlePos, float _fCircleRadius, 
 	float limitLeftRect = _rectPos.x - _rectSize.x * 0.5f;
 	float limitTopRect = _rectPos.y - _rectSize.y * 0.5f;
 	float limitBottomRect = _rectPos.y + _rectSize.y * 0.5f;
-	
+
 
 	//Closest Point on Rect to Circle
 	float closestX = Clamp(_circlePos.x, limitLeftRect, limitRightRect);
@@ -60,6 +60,12 @@ bool Collider::CheckCircleRect(const MyVec2D& _circlePos, float _fCircleRadius, 
 
 bool Collider::CheckCirclePixels(const MyVec2D& _circlePos, float _fCircleRadius, const MyVec2D& _pixelsPos, const MyVec2D& _pixelSize, const uint8_t* _pixels) const
 {
+	if (CheckCircleRect(_circlePos, _fCircleRadius, _pixelsPos, _pixelSize))
+	{
+
+		return true;
+	}
+
 	return false;
 }
 
@@ -118,11 +124,94 @@ bool Collider::CheckRectRect(const MyVec2D& _rectPos1, const MyVec2D& _rectSize1
 
 bool Collider::CheckRectPixels(const MyVec2D& _rectPos, const MyVec2D& _rectSize, const MyVec2D& _pixelsPos, const MyVec2D& _pixelSize, const uint8_t* _pixels) const
 {
+	if (CheckRectRect(_rectPos, _rectSize, _pixelsPos, _pixelSize))
+	{
+		return true;
+	}
+
+
+
 	return false;
 }
 
 bool Collider::CheckPixelsPixels(const MyVec2D& _pixelsPos1, const MyVec2D& _pixelSize1, const uint8_t* _pixels1, const MyVec2D& _pixelsPos2, const MyVec2D& _pixelSize2, const uint8_t* _pixels2) const
 {
+	if (!CheckRectRect(_pixelsPos1, _pixelSize1, _pixelsPos2, _pixelSize2))
+	{
+		return false;
+	}
+	
+	//Puntos de cortes
+	float limitRightPixel1 = _pixelsPos1.x + _pixelSize1.x * 0.5f;
+	float limitLeftPixel1 = _pixelsPos1.x - _pixelSize1.x * 0.5f;
+	float limitTopPixel1 = _pixelsPos1.y - _pixelSize1.y * 0.5f;
+	float limitBottomPixel1 = _pixelsPos1.y + _pixelSize1.y * 0.5f;
+
+	float limitRightPixel2 = _pixelsPos2.x + _pixelSize2.x * 0.5f;
+	float limitLeftPixel2 = _pixelsPos2.x - _pixelSize2.x * 0.5f;
+	float limitTopPixel2 = _pixelsPos2.y - _pixelSize2.y * 0.5f;
+	float limitBottomPixel2 = _pixelsPos2.y + _pixelSize2.y * 0.5f;
+
+	//Como sabemos que hay un punto de corte, se puede calcular el area en base a los valores intermedios de cada eje
+	std::vector<float> vIntersectionsX;
+	vIntersectionsX.push_back(limitLeftPixel1);
+	vIntersectionsX.push_back(limitRightPixel1);
+	vIntersectionsX.push_back(limitLeftPixel2);
+	vIntersectionsX.push_back(limitRightPixel2);
+
+	std::sort(vIntersectionsX.begin(), vIntersectionsX.end());
+	MyVec2D xCrossPoints{ vIntersectionsX[1],vIntersectionsX[2] };
+
+	std::vector<float> vIntersectionsY;
+	vIntersectionsY.push_back(limitTopPixel1);
+	vIntersectionsY.push_back(limitBottomPixel1);
+	vIntersectionsY.push_back(limitTopPixel2);
+	vIntersectionsY.push_back(limitBottomPixel2);
+
+	std::sort(vIntersectionsY.begin(), vIntersectionsY.end());
+	MyVec2D yCrossPoints{ vIntersectionsY[1],vIntersectionsY[2] };
+
+	MyVec2D minCrossPoint{ xCrossPoints.x, yCrossPoints.x };
+	MyVec2D maxCrossPoint{ xCrossPoints.y, yCrossPoints.y };
+	//area de interseccion = xCrossPoints & yCrossPoints
+	//Coger el pixel relativo a la posicion de cada sprite y el punto de corte
+	int xPixel1Min = minCrossPoint.x - limitLeftPixel1;
+	int xPixel1Max = maxCrossPoint.x - limitLeftPixel1;
+	int yPixel1Min = minCrossPoint.y - limitTopPixel1;
+	int yPixel1Max = maxCrossPoint.y - limitTopPixel1;
+
+	int xPixel2Min = minCrossPoint.x - limitLeftPixel2;
+	int xPixel2Max = maxCrossPoint.x - limitLeftPixel2;
+	int yPixel2Min = minCrossPoint.y - limitTopPixel2;
+	int yPixel2Max = maxCrossPoint.y - limitTopPixel2;
+
+	int xLenghtArea = xPixel1Max - xPixel1Min;
+	int yLenghtArea = yPixel1Max - yPixel1Min;
+
+	//Iterate the Area
+	for (unsigned int i = 0; i < yLenghtArea; i++)
+	{
+		int yPixel1Index = yPixel1Min + i;
+		int yPixel2Index = yPixel2Min + i;
+
+		for (unsigned int j = 0; j < xLenghtArea; j++)
+		{
+			int xPixel1Index = xPixel1Min + j;
+			int xPixel2Index = xPixel2Min + j;
+
+			int pixel1IndexAbsolut = ((yPixel1Index * _pixelSize1.x + xPixel1Index) * 4) + 3;
+			int pixel2IndexAbsolut = ((yPixel2Index * _pixelSize2.x + xPixel2Index) * 4) + 3;
+
+			if (_pixels1[pixel1IndexAbsolut] != 0 && _pixels2[pixel2IndexAbsolut] != 0)
+			{
+				return true;
+			}
+		}
+
+	}
+
+
+
 	return false;
 }
 
@@ -207,7 +296,7 @@ PixelsCollider::PixelsCollider(const MyVec2D& _pixelsPos, const MyVec2D& _pixelS
 
 bool PixelsCollider::Collides(const Collider& other) const
 {
-	return other.Collides(m_positionCollider, m_PixelSize);
+	return other.Collides(m_positionCollider, m_PixelSize, m_Pixels);
 }
 
 bool PixelsCollider::Collides(const MyVec2D& _circlePos, float _fCircleRadius) const
