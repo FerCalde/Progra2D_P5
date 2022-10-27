@@ -88,7 +88,7 @@ int main()
 		myWindow = (glfwCreateWindow(weightWindowScreen, heightWindowScreen, "HelloWorldWindowed", nullptr, nullptr));
 
 		//Cambiar nombre a la ventana
-		glfwSetWindowTitle(myWindow, "Audio_Practica1 FerCalderon");
+		glfwSetWindowTitle(myWindow, "Practica5 FerCalderon");
 
 		//Asociar contexto OpenGL a ventana
 		glfwMakeContextCurrent(myWindow);
@@ -491,15 +491,8 @@ void CallbackUpdateSprite(Sprite& _sprite, float _fDeltaTime)
 	_sprite.SetScale(_sprite.GetScale());
 
 	//Rotation Update
-
-	//@TODO: CORREGIR ROTATION
 	MyVec2D dir = (myCursorPos - _sprite.GetPosition());
 
-
-	//if (dir.Magnitude() >= fToleranceMovement)
-	//{
-	//	_sprite.m_bIsMoving = true;
-	//}
 	dir.Magnitude() >= fToleranceMovement ? _sprite.m_bIsMoving = true : _sprite.m_bIsMoving = false;
 
 
