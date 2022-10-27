@@ -277,19 +277,19 @@ int main()
 				if (glfwGetMouseButton(myWindow, GLFW_MOUSE_BUTTON_LEFT))
 				{
 					ptrBeePlayer->SetTexture(ptrSpriteManager->m_vTextureArray[3]);
-					ptrBeePlayer->SetFPS(1);
+					ptrBeePlayer->SetFPS(0);
 					ptrBeePlayer->SetCollisionType(COLLISION_CIRCLE);
 				}
 				if (glfwGetMouseButton(myWindow, GLFW_MOUSE_BUTTON_RIGHT))
 				{
 					ptrBeePlayer->SetTexture(ptrSpriteManager->m_vTextureArray[4]);
-					ptrBeePlayer->SetFPS(1);
+					ptrBeePlayer->SetFPS(0);
 					ptrBeePlayer->SetCollisionType(COLLISION_RECT);
 
 				}
 				if (glfwGetMouseButton(myWindow, GLFW_MOUSE_BUTTON_MIDDLE))
 				{
-					ptrBeePlayer->SetTexture(ptrSpriteManager->m_vTextureArray[0], 8, 1);
+					ptrBeePlayer->SetTexture(ptrSpriteManager->m_vTextureArray[0], 1, 1);
 					ptrBeePlayer->SetFPS(0);
 					ptrBeePlayer->SetCollisionType(COLLISION_PIXELS);
 				}
@@ -315,6 +315,8 @@ int main()
 
 				//Collisions
 				//ptrBall->Collides(*ptrBeePlayer) ? ptrBeePlayer->SetColor(1, 0, 0, 1) : ptrBeePlayer->SetColor(1, 1, 1, 1);
+				
+				ptrBeePlayer->SetColor(1, 1, 1, 1); //Restablecer color por si ha dejado de estar colisionando
 				for (Sprite* staticSpritesCollisions : ptrSpriteManager->m_vSpriteArray)
 				{
 					if (staticSpritesCollisions->Collides(*ptrBeePlayer))
@@ -324,7 +326,6 @@ int main()
 					}
 					else
 					{
-						ptrBeePlayer->SetColor(1, 1, 1, 1);
 						staticSpritesCollisions->SetColor(1, 1, 1, 1);
 					}
 				}

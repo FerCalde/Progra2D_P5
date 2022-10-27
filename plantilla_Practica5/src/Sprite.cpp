@@ -49,6 +49,7 @@ void Sprite::Draw() const
 	//ltex_draw(GetTexture(), GetPosition().x, GetPosition().y);
 	ltex_drawrotsized(GetTexture(), GetPosition().x, GetPosition().y, GetRotation(), GetPivot().x, GetPivot().y, GetSize().x, GetSize().y, u0, v0, u1, v1);
 	
+	
 	//lgfx_setcolor(1,1,1,1); //Restablecer a blanco para que no afecte a otros Draws
 }
 
